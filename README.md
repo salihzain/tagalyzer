@@ -18,6 +18,12 @@ Then run inside your project
 $ tagalyzer -tag=json -tag=gorm  ./...
 ```
 
+To include embedded fields
+
+```
+$ tagalyzer -checkembedded -tag=json -tag=gorm  ./...
+```
+
 **Notes**:
 
 You may use any number of tags
