@@ -82,17 +82,16 @@ func run(pass *analysis.Pass) (interface{}, error) {
 
 					// check for embedded fields
 					if f.Names == nil || len(f.Names) == 0 {
-						if checkEmbedded {
-							fieldName = fmt.Sprintf("%+v", f.Type)
+						if !checkEmbedded {
+							continue
 						}
+
+						fieldName = fmt.Sprintf("%+v", f.Type)
 					} else {
 						fieldName = f.Names[0].Name
 					}
 
-					// the case if is embedded and checkEmbedded || normal field
-					if fieldName != "" {
-						pass.Reportf(f.Pos(), fmt.Sprintf("field:%v is missing tag:%v", fieldName, tag))
-					}
+					pass.Reportf(f.Pos(), fmt.Sprintf("field:%v is missing tag:%v", fieldName, tag))
 				}
 			}
 		}
