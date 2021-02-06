@@ -14,6 +14,13 @@ func TestTagalyzer(t *testing.T) {
 	Analyzer.Flags.Set("tag", "json")
 	analysistest.Run(t, analysistest.TestData(), Analyzer, "onetag.go")
 
+	// test with embedded fields, first ignore embedded
+	analysistest.Run(t, analysistest.TestData(), Analyzer, "ignoreembedded.go")
+
+	// test with embedded, this time check
+	Analyzer.Flags.Set("checkembedded", "true")
+	analysistest.Run(t, analysistest.TestData(), Analyzer, "checkembedded.go")
+
 	// test with multiple tags
 	Analyzer.Flags.Set("tag", "gorm")
 	analysistest.Run(t, analysistest.TestData(), Analyzer, "multipletags.go")

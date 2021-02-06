@@ -55,11 +55,13 @@ var (
 		},
 	}
 
-	tags Tags
+	tags          Tags
+	checkEmbedded bool
 )
 
 func init() {
 	Analyzer.Flags.Var(&tags, "tag", "a list of struct tags to check, for example: -tag json -tag gorm ...")
+	Analyzer.Flags.BoolVar(&checkEmbedded, "checkembedded", false, "include embedded fields in tag check")
 }
 
 func run(pass *analysis.Pass) (interface{}, error) {
@@ -76,8 +78,21 @@ func run(pass *analysis.Pass) (interface{}, error) {
 		for _, f := range s.Fields.List {
 			for _, tag := range tags {
 				if f.Tag == nil || !strings.Contains(f.Tag.Value, tag) {
-					fieldName := f.Names[0].Name
-					pass.Reportf(f.Pos(), fmt.Sprintf("field:%v is missing tag:%v", fieldName, tag))
+					var fieldName string
+
+					// check for embedded fields
+					if f.Names == nil || len(f.Names) == 0 {
+						if checkEmbedded {
+							fieldName = fmt.Sprintf("%+v", f.Type)
+						}
+					} else {
+						fieldName = f.Names[0].Name
+					}
+
+					// the case if is embedded and checkEmbedded || normal field
+					if fieldName != "" {
+						pass.Reportf(f.Pos(), fmt.Sprintf("field:%v is missing tag:%v", fieldName, tag))
+					}
 				}
 			}
 		}
