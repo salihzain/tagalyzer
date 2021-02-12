@@ -10,6 +10,10 @@ import (
 	"golang.org/x/tools/go/ast/inspector"
 )
 
+const (
+	TAG_IGNORE_FIELD = `tagalyzer:"-"`
+)
+
 // Tags allow passing multiple values to the same command line flag
 type Tags []string
 
@@ -76,6 +80,12 @@ func run(pass *analysis.Pass) (interface{}, error) {
 		s := n.(*ast.StructType)
 
 		for _, f := range s.Fields.List {
+			// if struct field contains `tagalyzer:"-"`, then ignore it
+			// don't do any analysis on such fields
+			if f.Tag != nil && strings.Contains(f.Tag.Value, TAG_IGNORE_FIELD) {
+				continue
+			}
+
 			for _, tag := range tags {
 				if f.Tag == nil || !strings.Contains(f.Tag.Value, tag) {
 					var fieldName string

@@ -14,6 +14,9 @@ func TestTagalyzer(t *testing.T) {
 	Analyzer.Flags.Set("tag", "json")
 	analysistest.Run(t, analysistest.TestData(), Analyzer, "onetag.go")
 
+	// test ignore field using `tagalyzer:"-"`
+	analysistest.Run(t, analysistest.TestData(), Analyzer, "ignorefield.go")
+
 	// test with embedded fields, first ignore embedded
 	analysistest.Run(t, analysistest.TestData(), Analyzer, "ignoreembedded.go")
 
